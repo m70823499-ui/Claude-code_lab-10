@@ -6,9 +6,11 @@ description: Fase de prueba que se usa cuando se considera TERMINADA la implemen
 # Verify-after-changes — probar los cambios en el navegador
 
 Este skill es la **fase de prueba al cerrar una implementación**. Asume que el
-código ya está escrito y que existe un objetivo claro (un plan y, si existe, un
-spec en `docs/specs/`). Su trabajo es **comprobar en el navegador real** que lo
-construido cumple ese objetivo, y luego **arreglar lo que falle** o **dar luz
+código ya está escrito y que existe un objetivo claro: el **plan** en
+`docs/plans/YYYY-MM-DD-title.md` y su **spec** de referencia en
+`docs/specs/YYYY-MM-DD-title.md` (mismo título/slug entre ambos). Su trabajo es
+**comprobar en el navegador real** que lo construido cumple ese objetivo, y
+luego **arreglar lo que falle** o **dar luz
 verde**.
 
 No es una revisión de estilo ni de copy (para eso está `revision-final`): aquí
@@ -23,8 +25,9 @@ el foco es **¿funciona lo que acabamos de construir y cumple lo prometido?**.
    para el objetivo de este cambio (no 20 triviales). Cada caso: qué se prueba,
    qué se espera, qué pasó (✅/❌), y evidencia (captura o dato leído del DOM).
 3. **Comparar contra el plan y el spec.** El criterio de éxito no es "no
-   explotó", es "hace lo que el plan y el spec (`docs/specs/…`) dijeron". Si hay
-   spec, léelo y contrasta caso por caso. Si no hay spec, usa el plan acordado.
+   explotó", es "hace lo que el plan (`docs/plans/…`) y el spec (`docs/specs/…`)
+   dijeron". Lee ambos y contrasta caso por caso. Si falta alguno, usa el que
+   exista (o el objetivo acordado).
 4. **Con el feedback, actuar:**
    - Lo que **falle o no alcance** el objetivo → **arréglalo**, y vuelve a
      probar ese caso hasta que pase (re-verifica, no asumas).
@@ -90,7 +93,7 @@ Pon los resultados al lado de lo prometido:
 ```
 # Verificación — <título del cambio> · <fecha>
 Probado con: navegador headless (móvil 375px + escritorio), tema claro y oscuro.
-Referencia: <plan / docs/specs/AAAA-MM-DD-title.md>
+Referencia: docs/plans/AAAA-MM-DD-title.md · docs/specs/AAAA-MM-DD-title.md
 
 ## Casos de prueba (5)
 1. <caso> — Esperado: <...> · Real: <...> — ✅/❌  (evidencia: preview-x.png)
