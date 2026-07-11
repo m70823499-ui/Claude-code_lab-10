@@ -86,10 +86,24 @@ fuente caída, sin resultados, contenido que no carga, uso en móvil…) y cómo
 maneja cada caso para que la experiencia siga siendo clara y honesta.
 ```
 
-## Al terminar
+## Al terminar — approval gate
 
-1. Escribe el archivo en la ruta correcta y **muéstrale al usuario un resumen**
-   de cada sección (no lo dejes solo en disco).
-2. Cierra preguntando: **"¿Apruebas este spec o ajustamos alguna sección antes
-   de pasar a construir?"** No empieces a implementar hasta que el usuario
-   apruebe.
+Escribe el archivo en la ruta correcta y **muéstrale al usuario un resumen** de
+cada sección (no lo dejes solo en disco). Luego abre una **compuerta de
+aprobación**: el spec no avanza hasta que el usuario decida. Las opciones son
+solo dos:
+
+- **Iterar** — el usuario pide ajustes en una o varias secciones. Aplícalos
+  sobre el mismo archivo y **vuelve a abrir la compuerta** (muestra el resumen y
+  vuelve a preguntar). Se repite las veces que haga falta; el spec sigue en
+  estado *Borrador*.
+- **Aprobar y continuar** — el usuario aprueba. Marca el spec como aprobado
+  (puedes cambiar el `Estado` a "Aprobado") y **pasa al skill `design-plan`**
+  para generar el plan de implementación a partir de este spec.
+
+Cierra siempre preguntando de forma explícita, por ejemplo:
+**"¿Apruebas el spec y pasamos a generar el plan (design-plan), o iteramos
+alguna sección primero?"**
+
+**Nunca** empieces a implementar código desde este skill: aprobar el spec lleva
+a `design-plan`, no directo a construir.
