@@ -177,6 +177,80 @@
     cont.appendChild(svg);
   }
 
+  /* -------- Cobertura 5G por operador (celdas ✓/✕) -------- */
+  function coverage5g(containerId, dark) {
+    var cont = document.getElementById(containerId);
+    if (!cont) return;
+    cont.innerHTML = "";
+
+    var rows = window.PLANES.operadores.map(function (op) {
+      var con = op.planes.filter(function (p) { return p.red5g; });
+      var precios = con.map(function (p) { return p.precio; });
+      return {
+        nombre: op.nombre,
+        color: dark ? op.colorDark : op.color,
+        con: con.length,
+        total: op.planes.length,
+        desde: precios.length ? Math.min.apply(null, precios) : null,
+        planes: op.planes.map(function (p) {
+          return { nombre: p.nombre, red5g: p.red5g };
+        }),
+      };
+    });
+
+    var W = 560;
+    var rowH = 62, padTop = 12, padBottom = 12;
+    var labelW = 84, valueW = 158;
+    var plotX = labelW, plotW = W - labelW - valueW;
+    var H = padTop + rows.length * rowH + padBottom;
+
+    var maxTotal = 1;
+    rows.forEach(function (r) { if (r.total > maxTotal) maxTotal = r.total; });
+    var cellW = plotW / maxTotal, gap = 8, cw = cellW - gap, barH = 28;
+
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img" });
+    svg.setAttribute("aria-label", "Planes con 5G por operador");
+
+    rows.forEach(function (r, i) {
+      var y = padTop + i * rowH;
+      var barY = y + (rowH - barH) / 2 - 4;
+
+      // Nombre del operador
+      svg.appendChild(el("text", {
+        x: 0, y: barY + barH / 2 + 4, class: "bar-name",
+        "font-size": "13", "font-weight": "700",
+      }, r.nombre));
+
+      // Una celda por plan: llena (con 5G) o tenue (solo 4G)
+      r.planes.forEach(function (p, j) {
+        var x = plotX + j * cellW;
+        var cell = el("rect", {
+          x: x, y: barY, width: cw, height: barH, rx: 6,
+          fill: p.red5g ? r.color : "currentColor",
+          opacity: p.red5g ? 1 : 0.10,
+        });
+        withTitle(cell, r.nombre + " " + p.nombre + " — " + (p.red5g ? "con 5G" : "solo 4G"));
+        svg.appendChild(cell);
+        svg.appendChild(el("text", {
+          x: x + cw / 2, y: barY + barH / 2 + 5, "text-anchor": "middle",
+          fill: p.red5g ? "#fff" : "currentColor",
+          "font-size": "14", "font-weight": "800",
+          opacity: p.red5g ? 1 : 0.45,
+        }, p.red5g ? "✓" : "✕"));
+      });
+
+      // Resumen a la derecha: conteo + "desde $"
+      svg.appendChild(el("text", {
+        x: plotX + plotW + 12, y: barY + barH / 2 - 1, class: "bar-label",
+      }, r.con + " de " + r.total + " con 5G"));
+      svg.appendChild(el("text", {
+        x: plotX + plotW + 12, y: barY + barH / 2 + 15, class: "axis-text",
+      }, r.desde ? "5G desde " + fmtCOP(r.desde) : "sin planes 5G"));
+    });
+
+    cont.appendChild(svg);
+  }
+
   /* -------- Render de todo el dashboard -------- */
   function render(dark) {
     var items = flatPlanes(dark);
@@ -213,6 +287,9 @@
 
     // 4) Dispersión
     scatter("chart-dispersion", dark);
+
+    // 5) Cobertura 5G por operador (sección aparte)
+    coverage5g("chart-5g", dark);
   }
 
   function shortName(p) {

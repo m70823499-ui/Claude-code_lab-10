@@ -125,13 +125,17 @@ window.PLANES = {
    - Datos incluidos en GB (barras; ilimitado marcado con ∞)
    - Precio por GB (barras; solo planes con GB definidos)
    - Precio vs. datos (dispersión) — más leyenda de operadores.
-4. **`#comparador` — matriz estilo pricing** — cabecera con insignia circular de
+4. **`#cobertura` — "Cobertura 5G por operador"** — tarjeta con un gráfico SVG
+   de celdas ✓/✕ (una por plan) que muestra cuántos planes de cada operador
+   traen 5G y desde qué precio arranca. Usa el campo `red5g` que ya existe en
+   `data.js` (no requiere datos nuevos). Se re-renderiza al cambiar de tema.
+5. **`#comparador` — matriz estilo pricing** — cabecera con insignia circular de
    precio por plan; filas: Datos, Red, 5G, Minutos, SMS, Streaming, Roaming,
    Oferta, Fuente; pie con pastilla del operador.
-5. **`#consideraciones` — "Cosas a tener en cuenta"** — tarjetas con ícono
+6. **`#consideraciones` — "Cosas a tener en cuenta"** — tarjetas con ícono
    (permanencia, letra pequeña de ofertas, velocidad tras agotar datos, 5G,
    roaming, streaming incluido, datos para compartir).
-6. **`#recomendador` — "¿Cuál me conviene?"** — cuestionario de 6 preguntas +
+7. **`#recomendador` — "¿Cuál me conviene?"** — cuestionario de 6 preguntas +
    panel de resultado (plan top, precio, razones, segunda opción, barras de
    puntaje, fuente).
 
