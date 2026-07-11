@@ -421,6 +421,123 @@ a { color: var(--tigo); }
 .reco-source { font-size: .74rem; color: var(--ink-muted); margin-top: 14px; }
 .reco-source a { color: var(--ink-muted); }
 
+/* ============ COMUNIDAD ============ */
+.com-nota { color: var(--ink-muted); font-style: italic; }
+
+.com-grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; align-items: start; }
+
+.com-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+/* Botones genéricos */
+.btn {
+  font-family: inherit; font-size: .88rem; font-weight: 700;
+  border-radius: var(--radius-sm); border: 1.5px solid transparent;
+  padding: 10px 16px; cursor: pointer; transition: all .13s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.btn-ghost { background: transparent; border-color: var(--border); color: var(--ink-2); padding: 6px 12px; font-size: .8rem; }
+.btn-ghost:hover { border-color: var(--accent); color: var(--ink); }
+
+/* Tabs entrar / crear cuenta */
+.com-tabs { display: flex; gap: 6px; margin-bottom: 16px; background: var(--surface-2); padding: 4px; border-radius: 999px; }
+.com-tab {
+  flex: 1; border: none; background: transparent; cursor: pointer;
+  font-family: inherit; font-size: .85rem; font-weight: 700; color: var(--ink-2);
+  padding: 8px 10px; border-radius: 999px; transition: all .13s;
+}
+.com-tab.active { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+
+/* Formularios */
+.com-form { display: grid; gap: 14px; }
+.com-field { display: grid; gap: 5px; }
+.com-field > span { font-size: .8rem; font-weight: 700; color: var(--ink-2); }
+.com-field input, .com-field textarea {
+  font-family: inherit; font-size: .9rem; color: var(--ink);
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 12px; width: 100%;
+  transition: border-color .13s;
+}
+.com-field textarea { resize: vertical; min-height: 68px; }
+.com-field input:focus, .com-field textarea:focus { outline: none; border-color: var(--accent); }
+
+.com-msg { margin: 0; font-size: .8rem; min-height: 1em; }
+.com-msg.err { color: var(--claro); font-weight: 600; }
+.com-msg.ok { color: var(--good); font-weight: 600; }
+
+.com-aviso {
+  font-size: .74rem; color: var(--ink-muted); margin: 14px 0 0;
+  border-top: 1px dashed var(--border); padding-top: 12px;
+}
+
+/* Barra de usuario en sesión */
+.com-userbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.com-hi { font-size: .92rem; color: var(--ink-2); flex: 1; }
+.com-hi strong { color: var(--ink); }
+.com-avatar {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  display: grid; place-items: center;
+  background: var(--accent); color: #fff; font-weight: 800; font-size: 1rem;
+}
+
+.com-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+.com-sub-lbl { display: block; font-size: .8rem; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
+
+/* Selector de estrellas (radios en orden inverso para el hover) */
+.com-stars-input { display: inline-flex; flex-direction: row-reverse; gap: 2px; }
+.com-stars-input input { position: absolute; opacity: 0; pointer-events: none; }
+.com-stars-input label {
+  font-size: 1.5rem; line-height: 1; color: var(--bad); cursor: pointer; transition: color .1s;
+}
+.com-stars-input label:hover,
+.com-stars-input label:hover ~ label,
+.com-stars-input input:checked ~ label { color: var(--warn); }
+.com-stars-input input:focus-visible + label { outline: 2px solid var(--tigo); outline-offset: 2px; }
+
+/* Lista de comentarios */
+.com-list-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.com-list-title { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.com-count {
+  font-size: .75rem; font-weight: 800; color: var(--accent-ink);
+  background: var(--surface-3); border-radius: 999px; padding: 2px 9px;
+}
+.com-filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+.com-filtro {
+  border: 1.5px solid var(--border); background: var(--surface); cursor: pointer;
+  font-family: inherit; font-size: .78rem; font-weight: 600; color: var(--ink-2);
+  padding: 5px 12px; border-radius: 999px; transition: all .13s;
+}
+.com-filtro:hover { border-color: var(--accent); color: var(--ink); }
+.com-filtro.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.com-list { display: grid; gap: 12px; }
+.com-item {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow);
+}
+.com-item-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.com-item-meta { display: flex; flex-direction: column; line-height: 1.2; flex: 1; min-width: 0; }
+.com-item-user { font-weight: 700; font-size: .9rem; }
+.com-item-date { font-size: .72rem; color: var(--ink-muted); }
+.com-op-pill {
+  font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em;
+  color: #fff; background: var(--accent); padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+}
+.com-op-pill.tigo { background: var(--tigo); }
+.com-op-pill.claro { background: var(--claro); }
+.com-stars { font-size: .95rem; color: var(--bad); letter-spacing: 1px; }
+.com-stars-on { color: var(--warn); }
+.com-item-text { margin: 6px 0 0; font-size: .9rem; color: var(--ink-2); white-space: pre-wrap; word-wrap: break-word; }
+
+.com-empty { text-align: center; color: var(--ink-muted); padding: 30px 10px; }
+.com-empty-icon { font-size: 38px; display: block; margin-bottom: 8px; }
+
 /* ============ PIE ============ */
 .site-footer {
   background: var(--header-bg); color: #cfe0e1;
@@ -435,6 +552,7 @@ a { color: var(--tigo); }
   .chart-card.wide { grid-column: auto; }
   .reco-layout { grid-template-columns: 1fr; }
   .reco-result { position: static; }
+  .com-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
   .header-inner { flex-wrap: wrap; }

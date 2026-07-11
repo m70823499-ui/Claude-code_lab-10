@@ -33,6 +33,8 @@ Claude-code_lab-10/
 │   ├── charts.js       Gráficos en SVG puro.  API: window.Charts.render(dark)
 │   ├── comparison.js   Matriz comparativa + KPIs + consideraciones. API: window.Comparison.render()
 │   ├── recommender.js  Cuestionario + motor de puntaje. API: window.Recommender.render()
+│   ├── auth.js         Registro/login LOCAL (localStorage). API: window.Auth (signup/login/logout/current/onChange)
+│   ├── comunidad.js    Sección "Comunidad": comentarios/experiencias. API: window.Comunidad.render()
 │   └── app.js          Orquestador: tema, fecha, leyenda, arranca todo en DOMContentLoaded
 ├── README.md           Instrucciones de uso, publicación y actualización de datos
 ├── CLAUDE.md           Este archivo
@@ -40,11 +42,13 @@ Claude-code_lab-10/
 ```
 
 **Orden de carga de scripts** (en `index.html`, al final del `<body>`):
-`data.js` → `charts.js` → `comparison.js` → `recommender.js` → `app.js`.
-`app.js` es el último porque llama a los `render()` de los demás módulos.
+`data.js` → `charts.js` → `comparison.js` → `recommender.js` → `auth.js` →
+`comunidad.js` → `app.js`. `app.js` es el último porque llama a los `render()`
+de los demás módulos. `comunidad.js` va después de `auth.js` porque lo usa.
 
 Cada módulo JS es un IIFE que expone un único objeto global (`window.Charts`,
-`window.Comparison`, `window.Recommender`). No hay bundler ni imports ES.
+`window.Comparison`, `window.Recommender`, `window.Auth`, `window.Comunidad`).
+No hay bundler ni imports ES.
 
 ---
 
@@ -138,6 +142,10 @@ window.PLANES = {
 7. **`#recomendador` — "¿Cuál me conviene?"** — cuestionario de 6 preguntas +
    panel de resultado (plan top, precio, razones, segunda opción, barras de
    puntaje, fuente).
+8. **`#comunidad` — "Comunidad"** — registro/login (usuario + contraseña) y muro
+   de experiencias. Sin sesión muestra pestañas Entrar/Crear cuenta; con sesión,
+   un compositor (texto + operador Tigo/Claro/General + valoración de estrellas)
+   y la lista de comentarios filtrable por operador. Ver módulo abajo.
 
 ---
 
@@ -154,6 +162,21 @@ window.PLANES = {
   mostrar recomendación.
 
 ---
+
+## 👥 Comunidad y autenticación (`js/auth.js` + `js/comunidad.js`)
+
+- **Solo local, sin servidor:** usuarios y comentarios viven en `localStorage`
+  (claves `comunidad-usuarios`, `comunidad-sesion`, `comunidad-comentarios`).
+  **No se comparten entre navegadores ni personas.** El usuario sabe que hoy es
+  un prototipo local; el siguiente paso natural es reemplazar el almacenamiento
+  por un servidor/API sin tocar la UI.
+- **`window.Auth`** aísla el almacenamiento (`read`/`write`) para facilitar ese
+  salto. La contraseña se guarda como un **hash de ofuscación (djb2 + sal), NO
+  criptográfico** → **no es seguridad real**, advertirlo siempre en la UI.
+- **`window.Comunidad`** se re-dibuja al cambiar la sesión (`Auth.onChange`).
+  Mantiene estado de UI en variables del módulo (`authTab`, `filtro`). Cada
+  comentario: `{ id, usuario, texto, operador, estrellas, fecha }`.
+- Al ampliar (preguntas/respuestas, foros por hilos) apoyarse en estos módulos.
 
 ## 🙋 Preferencias del usuario (respetar en cambios futuros)
 

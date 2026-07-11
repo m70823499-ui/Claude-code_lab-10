@@ -72,6 +72,7 @@
     // Secciones
     if (window.Comparison) window.Comparison.render();
     if (window.Recommender) window.Recommender.render();
+    if (window.Comunidad) window.Comunidad.render();
     renderCharts();
     initTheme();
   }
