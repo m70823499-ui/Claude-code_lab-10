@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitor de Planes Móviles · Tigo vs Claro Colombia</title>
+  <meta name="description" content="Compara de forma gráfica los planes móviles pospago de Tigo y Claro en Colombia: precios, GB, ofertas y una recomendación según tus necesidades." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-palette="#0057B8,#E1251B">
+  <!-- ============ ENCABEZADO ============ -->
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="brand">
+        <span class="brand-mark">📶</span>
+        <div>
+          <h1>Monitor de Planes Móviles</h1>
+          <p class="tagline">Tigo <span class="vs">vs</span> Claro · Pospago Colombia</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar tema claro/oscuro">
+          <span class="theme-icon">🌙</span>
+        </button>
+        <p class="updated">Última actualización:<br /><strong id="fecha-actualizacion">—</strong></p>
+      </div>
+    </div>
+    <nav class="wrap subnav" aria-label="Secciones">
+      <a href="#dashboard">Gráficos</a>
+      <a href="#comparador">Comparador</a>
+      <a href="#consideraciones">A tener en cuenta</a>
+      <a href="#recomendador">Recomiéndame</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============ INTRO / KPIs ============ -->
+    <section class="wrap intro">
+      <p class="intro-text">
+        Precios y beneficios de los planes <strong>pospago</strong> de Tigo y Claro,
+        comparados de un vistazo. Cada dato incluye su <strong>fuente</strong> — nada inventado.
+      </p>
+      <div class="kpi-row" id="kpi-row"><!-- KPIs generados en JS --></div>
+      <p class="disclaimer" id="disclaimer"></p>
+    </section>
+
+    <!-- ============ DASHBOARD GRÁFICO ============ -->
+    <section id="dashboard" class="wrap section">
+      <h2 class="section-title">📊 Los números, de un vistazo</h2>
+      <div class="chart-grid">
+        <figure class="chart-card">
+          <figcaption>
+            <h3>Precio mensual por plan</h3>
+            <p class="chart-sub">Valor de lista en pesos colombianos (COP)</p>
+          </figcaption>
+          <div id="chart-precio" class="chart-svg"></div>
+        </figure>
+
+        <figure class="chart-card">
+          <figcaption>
+            <h3>Datos incluidos (GB)</h3>
+            <p class="chart-sub">Los planes ilimitados se marcan con ∞</p>
+          </figcaption>
+          <div id="chart-gb" class="chart-svg"></div>
+        </figure>
+
+        <figure class="chart-card">
+          <figcaption>
+            <h3>Valor real: precio por GB</h3>
+            <p class="chart-sub">Menos es mejor · solo planes con GB definidos</p>
+          </figcaption>
+          <div id="chart-valor" class="chart-svg"></div>
+        </figure>
+
+        <figure class="chart-card wide">
+          <figcaption>
+            <h3>Precio vs. datos</h3>
+            <p class="chart-sub">Abajo-derecha = más GB por menos plata</p>
+          </figcaption>
+          <div id="chart-dispersion" class="chart-svg"></div>
+        </figure>
+      </div>
+      <div class="legend" id="legend"><!-- leyenda de operadores en JS --></div>
+    </section>
+
+    <!-- ============ COMPARADOR (matriz estilo pricing) ============ -->
+    <section id="comparador" class="section section-alt">
+      <div class="wrap">
+        <h2 class="section-title">🆚 Comparador plan por plan</h2>
+        <p class="section-lead">Marca ✓ lo que incluye cada plan. Toca el nombre de la fuente para verificar.</p>
+        <div class="table-scroll">
+          <div id="pricing-matrix" class="pricing-matrix"><!-- generado en JS --></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COSAS A TENER EN CUENTA ============ -->
+    <section id="consideraciones" class="wrap section">
+      <h2 class="section-title">🧠 Cosas a tener en cuenta</h2>
+      <p class="section-lead">Antes de decidir, revisa la letra pequeña.</p>
+      <div class="consideraciones-grid" id="consideraciones-grid"><!-- generado en JS --></div>
+    </section>
+
+    <!-- ============ RECOMENDADOR ============ -->
+    <section id="recomendador" class="section section-alt">
+      <div class="wrap">
+        <h2 class="section-title">🎯 ¿Cuál me conviene?</h2>
+        <p class="section-lead">Responde 6 preguntas y te decimos el plan ideal — con el porqué.</p>
+        <div class="reco-layout">
+          <form id="reco-form" class="reco-form"><!-- preguntas generadas en JS --></form>
+          <aside id="reco-result" class="reco-result" aria-live="polite">
+            <div class="reco-placeholder">
+              <span class="reco-placeholder-icon">📝</span>
+              <p>Completa el cuestionario para ver tu recomendación.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p><strong>Monitor de Planes Móviles</strong> · Datos referenciales de fuentes de terceros.</p>
+      <p class="footer-note" id="footer-fecha"></p>
+      <p class="footer-note">Verifica siempre en el sitio oficial del operador antes de contratar.</p>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/comparison.js"></script>
+  <script src="js/recommender.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
