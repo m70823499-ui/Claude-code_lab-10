@@ -27,6 +27,7 @@
     </div>
     <nav class="wrap subnav" aria-label="Secciones">
       <a href="#dashboard">Gráficos</a>
+      <a href="#cobertura">Cobertura 5G</a>
       <a href="#comparador">Comparador</a>
       <a href="#consideraciones">A tener en cuenta</a>
       <a href="#recomendador">Recomiéndame</a>
@@ -81,6 +82,19 @@
         </figure>
       </div>
       <div class="legend" id="legend"><!-- leyenda de operadores en JS --></div>
+    </section>
+
+    <!-- ============ COBERTURA 5G ============ -->
+    <section id="cobertura" class="wrap section">
+      <h2 class="section-title">📶 Cobertura 5G por operador</h2>
+      <p class="section-lead">Cuántos planes de cada operador ya traen 5G, y desde qué precio arranca.</p>
+      <figure class="chart-card wide">
+        <figcaption>
+          <h3>Planes con 5G</h3>
+          <p class="chart-sub">Cada celda es un plan · ✓ incluye 5G · ✕ solo 4G</p>
+        </figcaption>
+        <div id="chart-5g" class="chart-svg"></div>
+      </figure>
     </section>
 
     <!-- ============ COMPARADOR (matriz estilo pricing) ============ -->
