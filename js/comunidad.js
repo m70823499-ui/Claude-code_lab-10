@@ -1,10 +1,12 @@
 /* ============================================================
-   comunidad.js — Sección "Comunidad": los usuarios registrados
-   comparten experiencias sobre los planes y las leen ordenadas.
+   comunidad.js — Sección "Comunidad". Dos pestañas:
+     • Experiencias: muro de comentarios con estrellas (por operador).
+     • Foros: hilos de discusión por tema (ver js/foros.js).
 
-   Depende de window.Auth (registro/sesión). Los comentarios se
-   guardan en localStorage; la estructura de datos está lista para
-   moverla a un servidor más adelante (ver getComentarios/save).
+   Depende de window.Auth (sesión) y window.Foros (pestaña Foros).
+   El panel de login/registro (izquierda) es compartido por ambas
+   pestañas. Todo se guarda en localStorage; la estructura de datos
+   está lista para moverla a un servidor más adelante.
 
    API pública (window.Comunidad):
      render()  -> monta la sección y se re-dibuja al cambiar la sesión.
@@ -22,8 +24,9 @@
   ];
 
   // Estado de UI (se conserva entre re-dibujos)
-  var authTab = "login";      // "login" | "signup"
-  var filtro = "todos";       // "todos" | "general" | "tigo" | "claro"
+  var mainTab = "experiencias"; // "experiencias" | "foros"
+  var authTab = "login";        // "login" | "signup"
+  var filtro = "todos";         // "todos" | "general" | "tigo" | "claro"
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
     return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
@@ -59,7 +62,7 @@
   }
   function inicial(usuario) { return usuario ? usuario.charAt(0).toUpperCase() : "?"; }
 
-  /* ---------- Bloque: autenticación (sin sesión) ---------- */
+  /* ---------- Panel de sesión (columna izquierda, compartido) ---------- */
   function authHTML() {
     var esLogin = authTab === "login";
     return '<div class="com-panel com-auth">' +
@@ -79,8 +82,16 @@
     "</div>";
   }
 
-  /* ---------- Bloque: publicar experiencia (con sesión) ---------- */
-  function composerHTML(usuario) {
+  function userbarHTML(usuario) {
+    return '<div class="com-userbar">' +
+      '<span class="com-avatar">' + esc(inicial(usuario)) + "</span>" +
+      '<span class="com-hi">Hola, <strong>' + esc(usuario) + "</strong></span>" +
+      '<button type="button" class="btn btn-ghost" id="com-logout">Salir</button>' +
+    "</div>";
+  }
+
+  // Compositor del muro de experiencias (solo pestaña Experiencias)
+  function composerFormHTML() {
     var chips = OPERADORES.map(function (o, i) {
       var id = "com-op-" + o.id;
       return '<span class="opt">' +
@@ -88,33 +99,32 @@
         '<label for="' + id + '">' + esc(o.nombre) + "</label></span>";
     }).join("");
 
-    // Selector de estrellas (radios; 5 marcado por defecto)
     var stars = "";
     for (var v = 5; v >= 1; v--) {
       stars += '<input type="radio" name="com-estrellas" id="com-star-' + v + '" value="' + v + '"' + (v === 5 ? " checked" : "") + ">" +
         '<label for="com-star-' + v + '" title="' + v + ' de 5">★</label>';
     }
 
-    return '<div class="com-panel com-composer">' +
-      '<div class="com-userbar">' +
-        '<span class="com-avatar">' + esc(inicial(usuario)) + "</span>" +
-        '<span class="com-hi">Hola, <strong>' + esc(usuario) + "</strong></span>" +
-        '<button type="button" class="btn btn-ghost" id="com-logout">Salir</button>' +
+    return '<form class="com-form" id="com-post-form">' +
+      '<label class="com-field"><span>Comparte tu experiencia o pregunta</span>' +
+        '<textarea id="com-texto" rows="3" maxlength="600" placeholder="¿Cómo te ha ido con tu plan? ¿Cobertura, atención, ofertas...?" required></textarea></label>' +
+      '<div class="com-row">' +
+        '<div class="com-sub"><span class="com-sub-lbl">Operador</span><div class="opt-group">' + chips + "</div></div>" +
+        '<div class="com-sub"><span class="com-sub-lbl">Tu valoración</span><div class="com-stars-input">' + stars + "</div></div>" +
       "</div>" +
-      '<form class="com-form" id="com-post-form">' +
-        '<label class="com-field"><span>Comparte tu experiencia o pregunta</span>' +
-          '<textarea id="com-texto" rows="3" maxlength="600" placeholder="¿Cómo te ha ido con tu plan? ¿Cobertura, atención, ofertas...?" required></textarea></label>' +
-        '<div class="com-row">' +
-          '<div class="com-sub"><span class="com-sub-lbl">Operador</span><div class="opt-group">' + chips + "</div></div>" +
-          '<div class="com-sub"><span class="com-sub-lbl">Tu valoración</span><div class="com-stars-input">' + stars + "</div></div>" +
-        "</div>" +
-        '<button type="submit" class="btn btn-primary">Publicar</button>' +
-        '<p class="com-msg" id="com-post-msg" role="alert"></p>' +
-      "</form>" +
-    "</div>";
+      '<button type="submit" class="btn btn-primary">Publicar</button>' +
+      '<p class="com-msg" id="com-post-msg" role="alert"></p>' +
+    "</form>";
   }
 
-  /* ---------- Bloque: lista de comentarios ---------- */
+  // Columna izquierda: login (sin sesión) o barra de usuario (+ compositor en Experiencias)
+  function sessionColumn(usuario) {
+    if (!usuario) return authHTML(); // ya es un .com-panel
+    var extra = mainTab === "experiencias" ? composerFormHTML() : "";
+    return '<div class="com-panel com-composer">' + userbarHTML(usuario) + extra + "</div>";
+  }
+
+  /* ---------- Muro de experiencias (pestaña Experiencias) ---------- */
   function listHTML() {
     var all = getComentarios().slice().sort(function (a, b) {
       return new Date(b.fecha) - new Date(a.fecha); // más recientes primero
@@ -158,16 +168,33 @@
     "</div>";
   }
 
+  /* ---------- Barra de pestañas principal ---------- */
+  function tabsHTML() {
+    function tab(id, label) {
+      return '<button type="button" class="com-maintab' + (mainTab === id ? " active" : "") +
+        '" data-maintab="' + id + '">' + label + "</button>";
+    }
+    return '<div class="com-maintabs">' +
+      tab("experiencias", "💬 Experiencias") +
+      tab("foros", "🗨️ Foros") +
+    "</div>";
+  }
+
   /* ---------- Render principal ---------- */
   function render() {
     var root = document.getElementById("comunidad-app");
     if (!root) return;
     var usuario = window.Auth ? window.Auth.current() : null;
 
+    var mainContent = mainTab === "foros" && window.Foros
+      ? window.Foros.mainHTML(usuario)
+      : listHTML();
+
     root.innerHTML =
+      tabsHTML() +
       '<div class="com-grid">' +
-        (usuario ? composerHTML(usuario) : authHTML()) +
-        listHTML() +
+        sessionColumn(usuario) +
+        '<div class="com-main">' + mainContent + "</div>" +
       "</div>";
 
     bind(usuario);
@@ -181,12 +208,17 @@
   function bind(usuario) {
     var root = document.getElementById("comunidad-app");
 
+    // Pestañas principales
+    root.querySelectorAll(".com-maintab").forEach(function (t) {
+      t.addEventListener("click", function () { mainTab = t.getAttribute("data-maintab"); render(); });
+    });
+
     // Tabs de autenticación
     root.querySelectorAll(".com-tab").forEach(function (t) {
       t.addEventListener("click", function () { authTab = t.getAttribute("data-tab"); render(); });
     });
 
-    // Filtros de la lista
+    // Filtros del muro
     root.querySelectorAll(".com-filtro").forEach(function (f) {
       f.addEventListener("click", function () { filtro = f.getAttribute("data-filtro"); render(); });
     });
@@ -200,7 +232,7 @@
         var p = document.getElementById("com-pass").value;
         var res = authTab === "login" ? window.Auth.login(u, p) : window.Auth.signup(u, p);
         if (!res.ok) { setMsg("com-auth-msg", res.error, false); return; }
-        render(); // ya con sesión: muestra el compositor
+        render();
       });
     }
 
@@ -208,7 +240,7 @@
     var logout = document.getElementById("com-logout");
     if (logout) logout.addEventListener("click", function () { window.Auth.logout(); render(); });
 
-    // Publicar comentario
+    // Publicar comentario (muro)
     var postForm = document.getElementById("com-post-form");
     if (postForm) {
       postForm.addEventListener("submit", function (e) {
@@ -227,8 +259,13 @@
           fecha: new Date().toISOString(),
         });
         saveComentarios(list);
-        render(); // refresca la lista con el nuevo comentario
+        render();
       });
+    }
+
+    // Pestaña Foros: delega el enganche de sus eventos
+    if (mainTab === "foros" && window.Foros) {
+      window.Foros.bind(root.querySelector(".com-main"), usuario);
     }
   }
 

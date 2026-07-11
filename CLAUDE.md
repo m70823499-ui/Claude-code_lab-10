@@ -34,7 +34,8 @@ Claude-code_lab-10/
 │   ├── comparison.js   Matriz comparativa + KPIs + consideraciones. API: window.Comparison.render()
 │   ├── recommender.js  Cuestionario + motor de puntaje. API: window.Recommender.render()
 │   ├── auth.js         Registro/login LOCAL (localStorage). API: window.Auth (signup/login/logout/current/onChange)
-│   ├── comunidad.js    Sección "Comunidad": comentarios/experiencias. API: window.Comunidad.render()
+│   ├── foros.js        Foros por hilos (lista→detalle). API: window.Foros (mainHTML/bind)
+│   ├── comunidad.js    Sección "Comunidad" con pestañas Experiencias/Foros. API: window.Comunidad.render()
 │   └── app.js          Orquestador: tema, fecha, leyenda, arranca todo en DOMContentLoaded
 ├── README.md           Instrucciones de uso, publicación y actualización de datos
 ├── CLAUDE.md           Este archivo
@@ -43,12 +44,13 @@ Claude-code_lab-10/
 
 **Orden de carga de scripts** (en `index.html`, al final del `<body>`):
 `data.js` → `charts.js` → `comparison.js` → `recommender.js` → `auth.js` →
-`comunidad.js` → `app.js`. `app.js` es el último porque llama a los `render()`
-de los demás módulos. `comunidad.js` va después de `auth.js` porque lo usa.
+`foros.js` → `comunidad.js` → `app.js`. `app.js` es el último porque llama a los
+`render()` de los demás módulos. `comunidad.js` va después de `auth.js` y
+`foros.js` porque usa ambos.
 
 Cada módulo JS es un IIFE que expone un único objeto global (`window.Charts`,
-`window.Comparison`, `window.Recommender`, `window.Auth`, `window.Comunidad`).
-No hay bundler ni imports ES.
+`window.Comparison`, `window.Recommender`, `window.Auth`, `window.Foros`,
+`window.Comunidad`). No hay bundler ni imports ES.
 
 ---
 
@@ -142,10 +144,11 @@ window.PLANES = {
 7. **`#recomendador` — "¿Cuál me conviene?"** — cuestionario de 6 preguntas +
    panel de resultado (plan top, precio, razones, segunda opción, barras de
    puntaje, fuente).
-8. **`#comunidad` — "Comunidad"** — registro/login (usuario + contraseña) y muro
-   de experiencias. Sin sesión muestra pestañas Entrar/Crear cuenta; con sesión,
-   un compositor (texto + operador Tigo/Claro/General + valoración de estrellas)
-   y la lista de comentarios filtrable por operador. Ver módulo abajo.
+8. **`#comunidad` — "Comunidad"** — registro/login (usuario + contraseña) con dos
+   pestañas: **Experiencias** (muro de comentarios con operador + valoración de
+   estrellas, filtrable) y **Foros** (hilos de discusión por tema). El panel de
+   login/registro (columna izquierda) es compartido por ambas pestañas. Ver
+   módulos abajo.
 
 ---
 
@@ -174,9 +177,18 @@ window.PLANES = {
   salto. La contraseña se guarda como un **hash de ofuscación (djb2 + sal), NO
   criptográfico** → **no es seguridad real**, advertirlo siempre en la UI.
 - **`window.Comunidad`** se re-dibuja al cambiar la sesión (`Auth.onChange`).
-  Mantiene estado de UI en variables del módulo (`authTab`, `filtro`). Cada
-  comentario: `{ id, usuario, texto, operador, estrellas, fecha }`.
-- Al ampliar (preguntas/respuestas, foros por hilos) apoyarse en estos módulos.
+  Mantiene estado de UI en variables del módulo (`mainTab`, `authTab`, `filtro`).
+  Cada comentario del muro: `{ id, usuario, texto, operador, estrellas, fecha }`.
+- **`window.Foros`** (pestaña Foros) — hilos por tema con navegación lista→detalle.
+  `comunidad.js` le pide `mainHTML(usuario)` para la columna principal y luego
+  `bind(root, usuario)`; Foros re-dibuja llamando a `Comunidad.render()`. Estado
+  de UI propio (`vista`, `hiloId`, `busqueda`, `temaFiltro`). El buscador filtra
+  en vivo por el DOM (no re-dibuja) para no perder el foco. Cada hilo en
+  `localStorage['comunidad-hilos']`:
+  `{ id, titulo, tema, usuario, fecha, mensajes:[{ usuario, texto, fecha }] }`
+  (`mensajes[0]` es el mensaje inicial). Temas: General, Cobertura, Ofertas,
+  Atención al cliente, Planes.
+- Al ampliar (preguntas/respuestas, votos, citas) apoyarse en estos módulos.
 
 ## 🙋 Preferencias del usuario (respetar en cambios futuros)
 
