@@ -34,6 +34,10 @@ Claude-code_lab-10/
 │   ├── comparison.js   Matriz comparativa + KPIs + consideraciones. API: window.Comparison.render()
 │   ├── recommender.js  Cuestionario + motor de puntaje. API: window.Recommender.render()
 │   └── app.js          Orquestador: tema, fecha, leyenda, arranca todo en DOMContentLoaded
+├── .claude/
+│   └── skills/
+│       └── revision-final/
+│           └── SKILL.md   Skill /revision-final: auditoría del sitio antes de publicar
 ├── README.md           Instrucciones de uso, publicación y actualización de datos
 ├── CLAUDE.md           Este archivo
 └── .gitignore          Ignora node_modules/ y preview-*.png (artefactos de verificación)
@@ -188,6 +192,30 @@ window.PLANES = {
   errores de consola. Revisar tema claro y oscuro y el responsive.
 - Los PNG de vista previa (`preview-*.png`) están en `.gitignore`: son
   artefactos de verificación, no se commitean.
+
+---
+
+## 🧪 Skills del proyecto (`.claude/skills/`)
+
+### `revision-final` — auditoría antes de publicar
+Ubicación: `.claude/skills/revision-final/SKILL.md`.
+Se invoca con `/revision-final` (o pidiendo "revisa el sitio completo",
+"qué falta antes de publicar"). Recorre un checklist fijo de 5 puntos y
+entrega una **lista de problemas priorizada** (🔴 Crítico / 🟡 Medio /
+⚪ Menor). **No corrige nada** hasta que el usuario apruebe.
+
+Los 5 puntos: (1) se ve bien en móvil, (2) botones/enlaces llevan a donde
+deben, (3) no hay textos de relleno, (4) las imágenes cargan (SVG con marcas
+hoy; `<img>` sin roto si se agregan), (5) el copy usa el tono definido en este
+CLAUDE.md ("Preferencias del usuario").
+
+Decisiones ya fijadas en el skill: verifica con **navegador headless**
+(móvil + escritorio, tema claro/oscuro, revisa consola); la referencia de
+tono es la sección "Preferencias del usuario"; y siempre pregunta antes de
+arreglar.
+
+**Si cambia** el checklist, el método de verificación o el formato de entrega,
+actualizar tanto el `SKILL.md` como esta sección.
 
 ---
 
