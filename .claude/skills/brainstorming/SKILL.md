@@ -12,8 +12,9 @@ terminar ofreciéndole **2 o 3 caminos concretos** entre los que elegir.
 ## Reglas de oro (no negociables)
 
 1. **NO escribas código todavía.** Nada de editar archivos ni crear features en
-   esta fase. Solo entender, preguntar y proponer. El código llega cuando el
-   usuario elige una alternativa.
+   esta fase. Solo entender, preguntar y proponer. Cuando el usuario elige una
+   alternativa, el siguiente paso es el skill `design-spec` (documentar el qué),
+   no ponerse a programar.
 2. **Primero preguntar, después proponer.** No asumas lo que el usuario quiere
    si hay dudas reales. Pregunta lo mínimo necesario para desambiguar (no
    interrogues de más).
@@ -80,8 +81,10 @@ Opciones para arrancar:
 
 **C) <nombre>** — ...  (opcional)
 
-¿Cuál seguimos? Cuando elijas, ahí sí empiezo a implementar.
+¿Cuál seguimos? Cuando elijas, pasamos a documentar el spec (design-spec).
 ```
 
-Cierra preguntando cuál alternativa quiere. **No empieces a codificar hasta que
-el usuario elija.**
+Cierra preguntando cuál alternativa quiere. **No empieces a codificar aquí:**
+una vez que el usuario elige, el siguiente paso **no es implementar**, sino
+pasar al skill `design-spec` para escribir la especificación del camino elegido.
+Solo después vienen `design-plan` (el plan técnico) y la construcción.
