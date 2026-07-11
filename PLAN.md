@@ -20,8 +20,10 @@ Rama: `claude/basic-signup-login-d4xw26`.
   General) y valoración de estrellas, filtrable. → `js/comunidad.js`
 - **Pestaña "Foros"**: hilos de discusión por tema (General, Cobertura, Ofertas,
   Atención al cliente, Planes), con navegación lista → detalle, buscador en vivo,
-  filtro por categoría, crear tema y responder, contador de respuestas y última
-  actividad. → `js/foros.js`
+  filtro por categoría **con contadores**, **orden configurable** (más activos /
+  más recientes), crear tema y responder, **responder citando**, **editar/borrar**
+  lo propio, contador de respuestas y última actividad. → `js/foros.js`
+- **Editar/borrar** también en los comentarios del muro. → `js/comunidad.js`
 - El panel de login es **compartido** por ambas pestañas.
 - Verificado con navegador headless (tema claro/oscuro y móvil), sin errores.
 
@@ -29,21 +31,19 @@ Rama: `claude/basic-signup-login-d4xw26`.
 - No se comparte entre navegadores/personas.
 - La contraseña se guarda con una huella de ofuscación **no criptográfica** →
   no es seguridad real; no usar contraseñas reales.
-- No hay editar/borrar, ni moderación, ni recuperación de contraseña.
+- No hay moderación ni recuperación de contraseña.
 
 ---
 
-## 🔜 Fase 1 — Mejoras del foro sin salir de "local" (opción C)
+## ✅ Fase 1 — Mejoras del foro sin salir de "local" (opción C) — Hecho
 
-Trabajo acotado, sigue sin servidor. Bueno como siguiente paso rápido.
+Todo esto ya está implementado (ver Fase 0):
 
-- **Categorías con contadores**: mostrar cuántos temas hay por categoría.
-- **Orden configurable**: "más recientes" vs "más activos".
-- **Responder citando** un mensaje anterior.
-- **Editar / borrar** tus propios comentarios y temas.
-- **Contador de respuestas** ya existe; añadir "sin leer" o similar es opcional.
-
-Esfuerzo: bajo–medio. Riesgo: bajo. Todo en `js/foros.js` + estilos.
+- **Categorías con contadores** en los filtros. ✓
+- **Orden configurable**: "más activos" vs "más recientes". ✓
+- **Responder citando** un mensaje anterior. ✓
+- **Editar / borrar** tus propios temas, respuestas y comentarios. ✓
+- **Contador de respuestas** y última actividad. ✓
 
 ---
 

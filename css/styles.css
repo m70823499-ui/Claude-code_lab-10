@@ -621,6 +621,45 @@ a { color: var(--tigo); }
 .foro-reply { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .foro-reply-hint { padding: 14px 0; }
 
+/* Orden y contadores de la lista */
+.foro-orden-wrap { font-size: .8rem; color: var(--ink-muted); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.foro-orden {
+  font-family: inherit; font-size: .82rem; font-weight: 600; color: var(--ink);
+  background: var(--card); border: 1.5px solid var(--border); border-radius: 999px; padding: 6px 10px; cursor: pointer;
+}
+.foro-orden:focus { outline: none; border-color: var(--accent); }
+.foro-filtros { margin-bottom: 14px; }
+.foro-filtro-count {
+  font-size: .68rem; font-weight: 800; opacity: .7; margin-left: 2px;
+  padding: 0 5px; border-radius: 999px; background: rgba(0,0,0,.06);
+}
+:root[data-theme="dark"] .foro-filtro-count { background: rgba(255,255,255,.08); }
+.com-filtro.active .foro-filtro-count { background: rgba(255,255,255,.25); opacity: 1; }
+
+.foro-hilo-header-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+/* Acciones pequeñas (citar / editar / borrar) */
+.foro-msg-actions, .com-item-actions { display: flex; gap: 10px; margin-top: 10px; }
+.foro-mini {
+  border: none; background: transparent; cursor: pointer; font-family: inherit;
+  font-size: .74rem; font-weight: 700; color: var(--ink-muted); padding: 2px 2px;
+}
+.foro-mini:hover { color: var(--ink); text-decoration: underline; }
+.foro-mini.mini-danger { color: var(--claro); }
+.foro-mini.mini-danger:hover { color: var(--claro); }
+
+/* Formularios de edición en línea */
+.foro-edit-form, .com-edit-form { display: grid; gap: 10px; }
+.foro-edit-text, .com-edit-text {
+  font-family: inherit; font-size: .9rem; color: var(--ink);
+  background: var(--surface); border: 1.5px solid var(--accent);
+  border-radius: var(--radius-sm); padding: 10px 12px; width: 100%; resize: vertical;
+}
+.foro-edit-text:focus, .com-edit-text:focus { outline: none; }
+.foro-edit-actions { display: flex; gap: 8px; }
+.foro-edit-actions .btn { padding: 7px 14px; }
+.com-editado { color: var(--ink-muted); font-style: italic; }
+
 /* ============ PIE ============ */
 .site-footer {
   background: var(--header-bg); color: #cfe0e1;

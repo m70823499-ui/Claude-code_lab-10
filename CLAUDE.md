@@ -177,18 +177,23 @@ window.PLANES = {
   salto. La contraseña se guarda como un **hash de ofuscación (djb2 + sal), NO
   criptográfico** → **no es seguridad real**, advertirlo siempre en la UI.
 - **`window.Comunidad`** se re-dibuja al cambiar la sesión (`Auth.onChange`).
-  Mantiene estado de UI en variables del módulo (`mainTab`, `authTab`, `filtro`).
-  Cada comentario del muro: `{ id, usuario, texto, operador, estrellas, fecha }`.
+  Mantiene estado de UI en variables del módulo (`mainTab`, `authTab`, `filtro`,
+  `editandoComentario`). Cada comentario del muro:
+  `{ id, usuario, texto, operador, estrellas, fecha, editado? }`. El autor puede
+  **editar/borrar** su comentario (edición en línea).
 - **`window.Foros`** (pestaña Foros) — hilos por tema con navegación lista→detalle.
   `comunidad.js` le pide `mainHTML(usuario)` para la columna principal y luego
   `bind(root, usuario)`; Foros re-dibuja llamando a `Comunidad.render()`. Estado
-  de UI propio (`vista`, `hiloId`, `busqueda`, `temaFiltro`). El buscador filtra
-  en vivo por el DOM (no re-dibuja) para no perder el foco. Cada hilo en
-  `localStorage['comunidad-hilos']`:
-  `{ id, titulo, tema, usuario, fecha, mensajes:[{ usuario, texto, fecha }] }`
+  de UI propio (`vista`, `hiloId`, `busqueda`, `temaFiltro`, `orden`,
+  `editandoIdx`). El buscador filtra en vivo por el DOM (no re-dibuja) para no
+  perder el foco. La lista tiene **contadores por categoría** y **orden** (más
+  activos / más recientes). En el detalle se puede **citar**, y el autor puede
+  **editar** cada mensaje, **borrar** respuestas y **borrar el tema** completo.
+  Cada hilo en `localStorage['comunidad-hilos']`:
+  `{ id, titulo, tema, usuario, fecha, mensajes:[{ usuario, texto, fecha, editado? }] }`
   (`mensajes[0]` es el mensaje inicial). Temas: General, Cobertura, Ofertas,
   Atención al cliente, Planes.
-- Al ampliar (preguntas/respuestas, votos, citas) apoyarse en estos módulos.
+- Al ampliar (preguntas/respuestas, votos) apoyarse en estos módulos.
 
 ## 🙋 Preferencias del usuario (respetar en cambios futuros)
 

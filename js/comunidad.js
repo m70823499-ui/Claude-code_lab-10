@@ -27,6 +27,7 @@
   var mainTab = "experiencias"; // "experiencias" | "foros"
   var authTab = "login";        // "login" | "signup"
   var filtro = "todos";         // "todos" | "general" | "tigo" | "claro"
+  var editandoComentario = null; // id del comentario en edición
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
     return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
@@ -125,7 +126,47 @@
   }
 
   /* ---------- Muro de experiencias (pestaña Experiencias) ---------- */
-  function listHTML() {
+  function comentarioHTML(c, usuario) {
+    var opClass = (c.operador === "tigo" || c.operador === "claro") ? c.operador : "";
+    var esPropio = usuario && c.usuario === usuario;
+
+    var cabecera = '<div class="com-item-head">' +
+      '<span class="com-avatar">' + esc(inicial(c.usuario)) + "</span>" +
+      '<div class="com-item-meta">' +
+        '<span class="com-item-user">' + esc(c.usuario) + "</span>" +
+        '<span class="com-item-date">' + esc(fmtFecha(c.fecha)) + (c.editado ? ' <span class="com-editado">(editado)</span>' : "") + "</span>" +
+      "</div>" +
+      '<span class="com-op-pill ' + opClass + '">' + esc(nombreOperador(c.operador)) + "</span>" +
+    "</div>";
+
+    // Modo edición
+    if (esPropio && editandoComentario === c.id) {
+      return '<article class="com-item">' + cabecera +
+        '<form class="com-form com-edit-form" data-edit-id="' + esc(c.id) + '">' +
+          '<textarea class="com-edit-text" rows="3" maxlength="600" required>' + esc(c.texto) + "</textarea>" +
+          '<div class="foro-edit-actions">' +
+            '<button type="submit" class="btn btn-primary">Guardar</button>' +
+            '<button type="button" class="btn btn-ghost" data-edit-cancel>Cancelar</button>' +
+          "</div>" +
+        "</form>" +
+      "</article>";
+    }
+
+    var acciones = esPropio
+      ? '<div class="com-item-actions">' +
+          '<button type="button" class="foro-mini" data-com-edit="' + esc(c.id) + '">Editar</button>' +
+          '<button type="button" class="foro-mini mini-danger" data-com-del="' + esc(c.id) + '">Borrar</button>' +
+        "</div>"
+      : "";
+
+    return '<article class="com-item">' + cabecera +
+      estrellas(c.estrellas) +
+      '<p class="com-item-text">' + esc(c.texto) + "</p>" +
+      acciones +
+    "</article>";
+  }
+
+  function listHTML(usuario) {
     var all = getComentarios().slice().sort(function (a, b) {
       return new Date(b.fecha) - new Date(a.fecha); // más recientes primero
     });
@@ -142,21 +183,7 @@
         "<p>" + (all.length ? "Nadie ha comentado sobre este operador todavía." :
           "Todavía no hay comentarios. ¡Sé el primero en compartir tu experiencia!") + "</p></div>";
     } else {
-      items = visibles.map(function (c) {
-        var opClass = (c.operador === "tigo" || c.operador === "claro") ? c.operador : "";
-        return '<article class="com-item">' +
-          '<div class="com-item-head">' +
-            '<span class="com-avatar">' + esc(inicial(c.usuario)) + "</span>" +
-            '<div class="com-item-meta">' +
-              '<span class="com-item-user">' + esc(c.usuario) + "</span>" +
-              '<span class="com-item-date">' + esc(fmtFecha(c.fecha)) + "</span>" +
-            "</div>" +
-            '<span class="com-op-pill ' + opClass + '">' + esc(nombreOperador(c.operador)) + "</span>" +
-          "</div>" +
-          estrellas(c.estrellas) +
-          '<p class="com-item-text">' + esc(c.texto) + "</p>" +
-        "</article>";
-      }).join("");
+      items = visibles.map(function (c) { return comentarioHTML(c, usuario); }).join("");
     }
 
     return '<div class="com-list-wrap">' +
@@ -188,7 +215,7 @@
 
     var mainContent = mainTab === "foros" && window.Foros
       ? window.Foros.mainHTML(usuario)
-      : listHTML();
+      : listHTML(usuario);
 
     root.innerHTML =
       tabsHTML() +
@@ -262,6 +289,40 @@
         render();
       });
     }
+
+    // Editar comentario propio (muro)
+    root.querySelectorAll("[data-com-edit]").forEach(function (b) {
+      b.addEventListener("click", function () { editandoComentario = b.getAttribute("data-com-edit"); render(); });
+    });
+    var editForm = root.querySelector(".com-edit-form");
+    if (editForm) {
+      editForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var id = editForm.getAttribute("data-edit-id");
+        var texto = (editForm.querySelector(".com-edit-text").value || "").trim();
+        if (texto.length < 3) return;
+        var list = getComentarios();
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].id === id) { list[i].texto = texto; list[i].editado = true; break; }
+        }
+        saveComentarios(list);
+        editandoComentario = null;
+        render();
+      });
+      var cancelEdit = editForm.querySelector("[data-edit-cancel]");
+      if (cancelEdit) cancelEdit.addEventListener("click", function () { editandoComentario = null; render(); });
+    }
+
+    // Borrar comentario propio (muro)
+    root.querySelectorAll("[data-com-del]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (!window.confirm("¿Borrar tu comentario?")) return;
+        var id = b.getAttribute("data-com-del");
+        saveComentarios(getComentarios().filter(function (c) { return c.id !== id; }));
+        editandoComentario = null;
+        render();
+      });
+    });
 
     // Pestaña Foros: delega el enganche de sus eventos
     if (mainTab === "foros" && window.Foros) {
