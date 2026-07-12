@@ -1,0 +1,379 @@
+/* Cooking Planner Personal — app + component styles.
+   Recreates the handoff design-system components (Button, IconButton, Badge,
+   Tag, IngredientRow, StatsBar, step badges) as plain CSS. Hover/press states
+   use CSS pseudo-classes instead of the prototype's JS state. */
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  padding-bottom: 60px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-primary); }
+a:hover { color: var(--accent-primary-hover); }
+
+h1, h2, h3, h4 { font-family: var(--font-display); }
+
+@keyframes cp-spin { to { transform: rotate(360deg); } }
+@keyframes cp-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cp-fade { animation: cp-fade-in 0.32s ease-out; }
+
+/* ---------------- Button ---------------- */
+.cp-btn {
+  font-family: var(--font-body);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: background var(--duration-base) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+.cp-btn:active:not([disabled]) { transform: scale(0.97); }
+.cp-btn[disabled] { cursor: not-allowed; opacity: 0.5; }
+.cp-btn--sm { padding: 8px 14px; font-size: var(--text-sm); gap: 6px; }
+.cp-btn--md { padding: 11px 20px; font-size: var(--text-base); gap: 8px; }
+.cp-btn--lg { padding: 14px 26px; font-size: var(--text-md); gap: 9px; }
+.cp-btn--primary { background: var(--accent-primary); color: var(--text-on-accent); }
+.cp-btn--primary:hover:not([disabled]) { background: var(--accent-primary-hover); }
+.cp-btn--secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+.cp-btn--secondary:hover:not([disabled]) { background: var(--bg-surface-alt); }
+.cp-btn--ghost { background: transparent; color: var(--text-primary); }
+.cp-btn--ghost:hover:not([disabled]) { background: var(--bg-surface-alt); }
+
+/* ---------------- Icon button ---------------- */
+.cp-iconbtn {
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--duration-base) var(--ease-standard);
+}
+.cp-iconbtn:hover { background: var(--bg-surface-alt); }
+.cp-iconbtn--active {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary-tint);
+}
+.cp-iconbtn[data-hidden="true"] { visibility: hidden; }
+
+/* ---------------- Badge ---------------- */
+.cp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.cp-badge--neutral { background: var(--bg-surface-alt); color: var(--text-secondary); }
+.cp-badge--accent { background: var(--accent-primary-tint); color: var(--accent-primary-hover); }
+.cp-badge--success { background: var(--success-tint); color: var(--success); }
+.cp-badge--dark { background: var(--slate-700); color: var(--text-on-dark); }
+
+/* ---------------- Tag ---------------- */
+.cp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-standard);
+  user-select: none;
+}
+.cp-tag:hover { background: var(--bg-surface-alt); }
+.cp-tag--selected {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary-tint);
+  color: var(--accent-primary-hover);
+}
+
+/* ---------------- Ingredient row ---------------- */
+.cp-ing {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: opacity var(--duration-base) var(--ease-standard),
+              background var(--duration-base) var(--ease-standard);
+}
+.cp-ing:last-child { border-bottom: none; }
+.cp-ing:hover { background: var(--bg-surface-alt); }
+.cp-ing--checked { opacity: 0.5; }
+.cp-ing__check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--sage-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cp-ing--checked .cp-ing__check { border: none; background: var(--success); }
+.cp-ing__label {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+}
+.cp-ing--checked .cp-ing__label { text-decoration: line-through; }
+.cp-ing__qty {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ---------------- Stats bar ---------------- */
+.cp-statsbar { display: flex; gap: 10px; flex-wrap: wrap; }
+.cp-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface-alt);
+  border-radius: var(--radius-pill);
+  padding: 10px 16px;
+}
+.cp-stat__col { display: flex; flex-direction: column; line-height: 1.15; }
+.cp-stat__v {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-md);
+  color: var(--text-primary);
+}
+.cp-stat__l {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* ---------------- Layout helpers ---------------- */
+.cp-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 32px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+.cp-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.cp-brand__name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.cp-eyebrow {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.cp-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 26px 26px 30px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.cp-field-label {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  margin-bottom: 10px;
+}
+
+.cp-textarea {
+  width: 100%;
+  min-height: 70px;
+  box-sizing: border-box;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  resize: vertical;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+.cp-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 11px 12px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+.cp-textarea:focus, .cp-input:focus {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.cp-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--accent-primary);
+  animation: cp-spin 0.9s linear infinite;
+}
+
+.cp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(51, 50, 45, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+.cp-modal {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  padding: 28px 26px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+
+.cp-actionbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  padding: 14px 28px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  box-shadow: 0 -8px 24px rgba(51, 50, 45, 0.08);
+  z-index: 20;
+}
+
+.cp-linkbtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--accent-primary);
+  text-decoration: underline;
+}
+.cp-linkbtn:hover { color: var(--accent-primary-hover); }
+
+.cp-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface-alt);
+  border-radius: var(--radius-pill);
+  padding: 9px 16px;
+}
+.cp-pill span {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+/* Step list */
+.cp-step { display: flex; gap: 16px; }
+.cp-step__rail { display: flex; flex-direction: column; align-items: center; }
+.cp-step__num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cp-step__line { width: 2px; flex: 1; background: var(--border-subtle); margin: 4px 0; }
+.cp-step__title { margin: 4px 0 6px; font-family: var(--font-display); font-size: var(--text-md); }
+.cp-step__desc {
+  margin: 4px 0 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+.cp-timer {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-surface-alt);
+  border-radius: var(--radius-pill);
+  padding: 8px 8px 8px 14px;
+  width: fit-content;
+}
+.cp-timer__val {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  min-width: 44px;
+}
+
+@media (max-width: 520px) {
+  .cp-topbar { padding: 16px 18px; }
+  .cp-actionbar { padding: 12px 16px; }
+}
