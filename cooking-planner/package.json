@@ -1,0 +1,12 @@
+{
+  "name": "cooking-planner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cooking Planner Personal — Fase 1 (app + backend proxy)",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

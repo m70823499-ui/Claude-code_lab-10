@@ -1,53 +1,34 @@
-/* Recipe generation via the Anthropic Messages API, called directly from the
-   browser so the app stays a static, double-click site (no server, no build).
-   The user's API key lives only in this browser's localStorage and is sent
-   solely to api.anthropic.com. The prototype used window.claude.complete();
-   this is its real-world replacement. */
+/* Recipe generation client.
+   Calls the app's own backend (/api/generate), which proxies to the Anthropic
+   API using a server-side key. The browser never sees or handles the key.
+   (In the prototype this was window.claude.complete(); now it's our backend.) */
 (function () {
-  var KEY_STORAGE = 'cookingPlanner.apiKey.v1';
-  var ENDPOINT = 'https://api.anthropic.com/v1/messages';
-  var MODEL = 'claude-opus-4-8';
+  // Relative URL so it works whatever path the app is served under.
+  var ENDPOINT = 'api/generate';
 
-  function getKey() {
-    try { return localStorage.getItem(KEY_STORAGE) || ''; } catch (e) { return ''; }
-  }
-  function setKey(k) {
-    try { localStorage.setItem(KEY_STORAGE, (k || '').trim()); } catch (e) {}
-  }
-  function hasKey() { return !!getKey(); }
-
-  // Returns the model's text output for a single-prompt completion.
   async function complete(prompt) {
-    var key = getKey();
-    if (!key) { var err = new Error('missing-api-key'); err.code = 'missing-api-key'; throw err; }
-
-    var res = await fetch(ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 1600,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    if (!res.ok) {
-      var detail = '';
-      try { var body = await res.json(); detail = body && body.error && body.error.message; } catch (e) {}
-      var e2 = new Error('http-' + res.status + (detail ? ': ' + detail : ''));
-      e2.status = res.status;
-      throw e2;
+    var res;
+    try {
+      res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt })
+      });
+    } catch (e) {
+      throw new Error('network'); // server not running / no connection
     }
 
-    var data = await res.json();
-    var block = (data.content || []).find(function (b) { return b.type === 'text'; });
-    return block ? block.text : '';
+    var data = null;
+    try { data = await res.json(); } catch (e) {}
+
+    if (!res.ok) {
+      var msg = (data && data.error) || ('error-' + res.status);
+      var err = new Error(msg);
+      err.status = res.status;
+      throw err;
+    }
+    return (data && data.text) || '';
   }
 
-  window.CookingAPI = { complete: complete, getKey: getKey, setKey: setKey, hasKey: hasKey };
+  window.CookingAPI = { complete: complete };
 })();

@@ -1,53 +1,71 @@
 # Cooking Planner Personal — Fase 1
 
 App personal (un solo usuario, sin cuentas) para **generar una receta ajustada a
-tus gustos, cocinarla y registrarla con un rating honesto**. Es un sitio
-**estático, sin build ni dependencias**: se abre haciendo doble clic en
-`index.html`.
+tus gustos, cocinarla y registrarla con un rating honesto**.
 
-Esta es la implementación de la **Fase 1** del roadmap, a partir del diseño
-entregado en el handoff de Claude Design (`Cooking Planner.dc.html` + el design
-system de tokens y componentes).
+Implementa la **Fase 1** del roadmap, a partir del diseño entregado en el handoff
+de Claude Design (`Cooking Planner.dc.html` + el design system de tokens y
+componentes).
+
+La generación de recetas se hace **por detrás (en un backend)**: la clave de la
+API vive en el servidor y **el navegador nunca la ve ni te la pide**.
 
 ---
 
 ## Qué hace (v1)
 
-1. **Configurar preferencias** la primera vez que se abre: picante (sí/no),
-   fruta (sí/no), formatos favoritos, cocinas favoritas y nivel de habilidad.
-   Se guardan una sola vez y se pueden editar después con el ícono de ajustes.
+1. **Configurar preferencias** la primera vez: picante (sí/no), fruta (sí/no),
+   formatos favoritos, cocinas favoritas y nivel de habilidad. Se guardan una
+   sola vez y se editan después con el ícono de ajustes.
 2. **Generar una receta bajo demanda** aplicando siempre esas preferencias.
-3. **Vista interactiva de la receta**: ingredientes con **porciones ajustables**
-   (las cantidades escalan solas), pasos numerados y **timer por paso** cuando
-   hay espera o cocción.
-4. **Registrar en el historial**: confirmar "Ya la cociné", poner un rating de
-   1 a 5 estrellas y, opcional, una observación. Solo entra al historial lo que
-   confirmas.
+3. **Vista interactiva**: ingredientes con **porciones ajustables** (las
+   cantidades escalan solas), pasos numerados y **timer por paso** cuando hay
+   espera o cocción.
+4. **Registrar en el historial**: "Ya la cociné" + rating 1–5 (obligatorio) +
+   observación opcional. Solo entra al historial lo que confirmas.
 
-Reglas de la spec ya implementadas: no se puede guardar preferencias sin al
-menos un formato y una cocina; la generación **reintenta una vez** sola y, si
-falla de nuevo, muestra un error con botón para reintentar; las porciones no
-bajan de 1; no se guarda un registro sin rating.
+Reglas de la spec: no se guardan preferencias sin al menos un formato y una
+cocina; la generación **reintenta una vez** sola y, si falla, muestra un error
+con botón para reintentar; las porciones no bajan de 1; no se guarda un registro
+sin rating.
 
 Fuera de alcance (v2): menú semanal, lista de compras, links de video,
 estadísticas mensuales.
 
 ---
 
-## Cómo usarlo
+## Publicar en Vercel (recomendado, todo por detrás)
 
-1. Doble clic en `index.html` (o `python3 -m http.server` y abrir el navegador).
-2. La generación de recetas usa la **API de Anthropic**. Como el sitio es
-   estático (sin servidor propio), la llamada se hace directo desde tu navegador
-   con **tu clave de API**:
-   - Al pulsar "Generar receta" por primera vez te pedirá la clave.
-   - También puedes configurarla desde **Preferencias → Clave de API**.
-   - La clave se guarda **solo en tu navegador** (`localStorage`) y se envía
-     únicamente a `api.anthropic.com`. Puedes crear una en
-     [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys).
+1. El repo ya está en GitHub. Entra a [vercel.com](https://vercel.com) →
+   **Add New… → Project** e importa este repositorio.
+2. En **Root Directory** elige la carpeta **`cooking-planner`**.
+3. En **Environment Variables** agrega:
+   `ANTHROPIC_API_KEY = sk-ant-...` (tu clave de
+   [console.anthropic.com](https://console.anthropic.com/settings/keys)).
+4. **Deploy**. Vercel sirve la app y usa `api/generate.js` como backend.
 
-Sin clave, todo el resto de la app funciona (configurar preferencias, ver el
-historial); solo la generación necesita la clave.
+La clave queda solo en Vercel; el sitio nunca la expone.
+
+---
+
+## Correr en tu computadora (desarrollo)
+
+Requiere **Node.js 18 o superior**.
+
+1. Configura la clave, de una de estas dos formas:
+   - Variable de entorno: `export ANTHROPIC_API_KEY=sk-ant-...`
+   - O crea el archivo `cooking-planner/.env` con una línea:
+     `ANTHROPIC_API_KEY=sk-ant-...`
+2. Desde la carpeta `cooking-planner/`, ejecuta: `node server.js`
+   (o `npm start`).
+3. Abre **http://localhost:3000**.
+
+El servidor local sirve la app **y** hace de proxy hacia la API (mismo endpoint
+`/api/generate` que en Vercel), así que la clave nunca sale del servidor.
+
+> Nota: abrir `index.html` con doble clic (`file://`) muestra la interfaz, pero
+> **la generación de recetas no funciona sin el backend** — usa Vercel o
+> `node server.js`.
 
 ---
 
@@ -55,28 +73,30 @@ historial); solo la generación necesita la clave.
 
 ```
 cooking-planner/
-├── index.html        Shell de la página (carga tokens, estilos y scripts)
+├── index.html        Shell de la página
+├── server.js         Backend local (sirve la app + proxy /api/generate). Node 18+, sin dependencias
+├── api/
+│   └── generate.js   Función serverless de Vercel (mismo proxy, con ANTHROPIC_API_KEY)
+├── package.json      Metadatos + script "start"
 ├── css/
-│   ├── tokens.css    Tokens del design system (colores, tipografía, radios, sombras) + dark mode
-│   └── app.css       Estilos base y de componentes (Button, Tag, Badge, IngredientRow, StatsBar, pasos)
+│   ├── tokens.css    Tokens del design system + dark mode
+│   └── app.css       Estilos base y de componentes
 └── js/
-    ├── icons.js      Set de íconos SVG (copiado del design system)
-    ├── api.js        Generación de receta vía API de Anthropic (clave en localStorage)
+    ├── icons.js      Íconos SVG (copiados del design system)
+    ├── api.js        Cliente: llama a /api/generate (nunca a la API directamente)
     └── app.js        Estado, vistas y lógica (onboarding, receta, timers, historial)
 ```
 
-## Notas de diseño / implementación
+## Notas de implementación
 
-- **Fiel al handoff**: los tokens (`css/tokens.css`) y los componentes se copian
-  del design system entregado; el flujo y la lógica replican
-  `Cooking Planner.dc.html`.
-- **Sin framework**: el prototipo era un artifact de React; aquí se reescribió en
-  JS puro para que sea un sitio estático de doble clic, sin bundler ni imports.
+- **Fiel al handoff**: tokens y componentes se copian del design system; el flujo
+  replica `Cooking Planner.dc.html`.
+- **Sin framework**: el prototipo era un artifact de React; aquí es JS puro.
+- **Backend en dos sabores**: `server.js` para local y `api/generate.js` para
+  Vercel; ambos exponen `POST /api/generate { prompt } → { text }` usando la
+  clave del servidor. El prototipo usaba `window.claude.complete()`; esto es su
+  reemplazo real.
 - **Dark mode** automático según el sistema (`prefers-color-scheme`), con los
   mismos valores `DARK_VARS` del diseño.
-- **API real**: el prototipo llamaba `window.claude.complete()` (runtime del
-  artifact). En la app real eso se reemplaza por una llamada directa a la
-  Messages API con `anthropic-dangerous-direct-browser-access`.
-- **Persistencia**: preferencias e historial en `localStorage`
-  (`cookingPlanner.prefs.v1`, `cookingPlanner.history.v1`); la clave en
-  `cookingPlanner.apiKey.v1`.
+- **Persistencia** en `localStorage`: `cookingPlanner.prefs.v1`,
+  `cookingPlanner.history.v1` (la clave de API **no** se guarda en el navegador).

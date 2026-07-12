@@ -2,7 +2,8 @@
    Vanilla-JS port of the handoff prototype (Cooking Planner.dc.html). Same
    state machine, same flows: onboarding -> generate -> interactive recipe
    (adjustable servings, per-step timers) -> log to history. Preferences and
-   history persist in localStorage; recipes are generated via CookingAPI. */
+   history persist in localStorage; recipes are generated via the app backend
+   (CookingAPI -> /api/generate), so no API key is ever handled in the browser. */
 (function () {
   'use strict';
 
@@ -119,8 +120,7 @@
     checked: {},
     timers: {},
     logOpen: false,
-    ratingDraft: 0,
-    keyModalOpen: false
+    ratingDraft: 0
   };
 
   function setState(partial) { Object.assign(state, partial); render(); }
@@ -156,7 +156,6 @@
 
   // ------------------------- recipe generation -------------------------
   function startGenerate() {
-    if (!window.CookingAPI.hasKey()) { setState({ keyModalOpen: true }); return; }
     setState({ view: 'recipe', status: 'loading', recipe: null, checked: {}, timers: {}, servings: state.baseServings || 2 });
     generateRecipe(false);
   }
@@ -196,9 +195,8 @@
       var baseServings = Math.max(1, Math.round(data.baseServings) || 2);
       setState({ recipe: data, baseServings: baseServings, servings: baseServings, status: 'ready', checked: {}, timers: {} });
     } catch (e) {
-      if (e && e.code === 'missing-api-key') { setState({ status: 'idle', view: 'home', keyModalOpen: true }); return; }
       if (!isRetry) { generateRecipe(true); return; }
-      setState({ status: 'error' });
+      setState({ status: 'error', errorMsg: (e && e.message) || '' });
     }
   }
 
@@ -236,19 +234,6 @@
     setState({ history: nextHistory, logOpen: false, view: 'home' });
   }
 
-  // ------------------------- API key modal -------------------------
-  function openKey() { setState({ keyModalOpen: true }); }
-  function closeKey() { setState({ keyModalOpen: false }); }
-  function saveKey() {
-    var el = document.querySelector('[data-keyinput]');
-    var v = el ? el.value.trim() : '';
-    if (!v) return;
-    window.CookingAPI.setKey(v);
-    setState({ keyModalOpen: false });
-    // If the user hit "generar" without a key, kick off generation now.
-    if (state.view === 'home') startGenerate();
-  }
-
   // ------------------------- timers tick -------------------------
   function tick() {
     var changed = false;
@@ -260,9 +245,9 @@
         changed = true;
       }
     });
-    // Re-render only when a timer changed and no text-entry modal is open
-    // (avoids stealing focus from the note/key textareas).
-    if (changed && !state.logOpen && !state.keyModalOpen) render();
+    // Re-render only when a timer changed and the log modal (with its textarea)
+    // isn't open, to avoid stealing focus from the note field.
+    if (changed && !state.logOpen) render();
   }
 
   // ------------------------- action dispatch -------------------------
@@ -287,10 +272,7 @@
     'open-log': openLog,
     'close-log': closeLog,
     'set-rating': function (el) { setRating(Number(el.getAttribute('data-val'))); },
-    'save-log': saveLog,
-    'open-key': openKey,
-    'close-key': closeKey,
-    'save-key': saveKey
+    'save-log': saveLog
   };
 
   function onClick(e) {
@@ -360,11 +342,6 @@
       button({ label: saveLabel, variant: 'primary', size: 'lg', icon: 'check', action: 'save-form' }) +
       '</div>';
 
-    var keyHint = '<div style="display:flex;align-items:center;gap:8px;font-size:var(--text-sm);color:var(--text-muted);flex-wrap:wrap;">' +
-      icon('settings', 15, 'var(--text-muted)') +
-      '<span>Clave de API de Anthropic: <strong>' + (window.CookingAPI.hasKey() ? 'configurada' : 'sin configurar') + '</strong>.</span>' +
-      '<button class="cp-linkbtn" data-action="open-key">' + (window.CookingAPI.hasKey() ? 'Cambiar clave' : 'Configurar clave') + '</button></div>';
-
     return '<div class="cp-fade" style="max-width:640px;margin:0 auto;padding:' + topPad + ' 28px 80px;">' +
       '<div style="margin-bottom:28px;">' +
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
@@ -372,15 +349,13 @@
       '<h1 style="font-size:var(--text-3xl);margin:0 0 8px;">' + esc(title) + '</h1>' +
       '<p style="font-family:var(--font-body);font-size:var(--text-base);color:var(--text-secondary);margin:0;line-height:var(--leading-normal);">' + esc(subtitle) + '</p>' +
       '</div>' +
-      '<div class="cp-card">' + spicyRow + fruitRow + formatsRow + cuisinesRow + skillRow + errorRow + keyHint + actions + '</div>' +
+      '<div class="cp-card">' + spicyRow + fruitRow + formatsRow + cuisinesRow + skillRow + errorRow + actions + '</div>' +
       '</div>';
   }
 
   function homeView() {
     var count = state.history.length;
     var label = count === 0 ? 'Sin recetas registradas todavía' : (count + (count === 1 ? ' receta cocinada' : ' recetas cocinadas'));
-    var keyNote = window.CookingAPI.hasKey() ? '' :
-      '<div style="margin-top:14px;"><button class="cp-linkbtn" data-action="open-key">Configura tu clave de API para generar recetas</button></div>';
     return '<div class="cp-fade" style="max-width:640px;margin:0 auto;padding:24px 28px 40px;text-align:center;">' +
       '<div style="margin:40px 0 30px;">' +
       icon('chef-hat', 46, 'var(--accent-primary)') +
@@ -390,7 +365,6 @@
       button({ label: 'Generar receta', variant: 'primary', size: 'lg', icon: 'sparkles', action: 'start-generate', style: 'width:100%;max-width:360px;margin:0 auto;' }) +
       '<div style="display:flex;gap:10px;justify-content:center;margin-top:32px;flex-wrap:wrap;">' +
       '<div class="cp-pill">' + icon('list', 15, 'var(--accent-secondary)') + '<span>' + esc(label) + '</span></div></div>' +
-      keyNote +
       '</div>';
   }
 
@@ -401,13 +375,14 @@
         '<div class="cp-spinner"></div>' +
         '<span style="font-family:var(--font-body);font-weight:600;color:var(--text-secondary);">Generando tu receta…</span></div>';
     } else if (state.status === 'error') {
+      var detail = state.errorMsg && state.errorMsg !== 'network'
+        ? esc(state.errorMsg)
+        : 'Revisa tu conexión e intenta de nuevo.';
       inner = '<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:90px 20px;text-align:center;">' +
         icon('alert-triangle', 34, 'var(--accent-secondary-hover)') +
         '<div><div style="font-family:var(--font-display);font-size:var(--text-lg);margin-bottom:6px;">No se pudo generar la receta</div>' +
-        '<div style="font-family:var(--font-body);color:var(--text-muted);font-size:var(--text-sm);">Revisa tu conexión o tu clave de API e intenta de nuevo.</div></div>' +
-        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;">' +
-        button({ label: 'Reintentar', variant: 'primary', icon: 'refresh-cw', action: 'manual-retry' }) +
-        '<button class="cp-linkbtn" data-action="open-key">Cambiar clave de API</button></div></div>';
+        '<div style="font-family:var(--font-body);color:var(--text-muted);font-size:var(--text-sm);max-width:360px;">' + detail + '</div></div>' +
+        button({ label: 'Reintentar', variant: 'primary', icon: 'refresh-cw', action: 'manual-retry' }) + '</div>';
     } else if (state.status === 'ready' && state.recipe) {
       inner = recipeReady();
     }
@@ -544,23 +519,6 @@
       '</div></div></div>';
   }
 
-  function keyModal() {
-    if (!state.keyModalOpen) return '';
-    var existing = window.CookingAPI.getKey();
-    return '<div class="cp-overlay"><div class="cp-modal">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
-      '<h3 style="font-size:var(--text-xl);margin:0;">Clave de API</h3>' +
-      iconButton({ name: 'x', size: 32, label: 'Cerrar', action: 'close-key' }) + '</div>' +
-      '<p style="font-family:var(--font-body);color:var(--text-secondary);margin:0 0 16px;font-size:var(--text-sm);line-height:var(--leading-normal);">' +
-      'Las recetas se generan con la API de Anthropic. Pega tu clave: se guarda solo en este navegador y se envía únicamente a api.anthropic.com. ' +
-      'Puedes crear una en <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.</p>' +
-      '<input class="cp-input" data-keyinput type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-..." value="' + esc(existing) + '" style="margin-bottom:20px;" />' +
-      '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
-      button({ label: 'Cancelar', variant: 'secondary', action: 'close-key' }) +
-      button({ label: 'Guardar clave', variant: 'primary', icon: 'check', action: 'save-key' }) +
-      '</div></div></div>';
-  }
-
   // ------------------------- render -------------------------
   function render() {
     var view = state.view;
@@ -571,7 +529,7 @@
     else if (view === 'recipe') main = recipeView();
     else if (view === 'history') main = historyView();
 
-    document.getElementById('app').innerHTML = topBar(view) + main + logModal() + keyModal();
+    document.getElementById('app').innerHTML = topBar(view) + main + logModal();
   }
 
   // ------------------------- boot -------------------------
