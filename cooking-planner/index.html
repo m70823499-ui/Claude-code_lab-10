@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cooking Planner Personal</title>
+  <meta name="description" content="App personal para generar recetas ajustadas a tus gustos, cocinarlas con timers por paso y llevar un historial real de lo cocinado.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234C6170' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 13.9V19a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5.1'/><path d='M17 13.9a4 4 0 1 0-1.2-7.8 3.5 3.5 0 0 0-6.6 0A4 4 0 1 0 7 13.9'/></svg>">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Load order matters: icons -> api -> app (app orchestrates render). -->
+  <script src="js/icons.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

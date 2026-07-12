@@ -1,0 +1,185 @@
+/* Cooking Planner Personal — design tokens
+   Copied verbatim from the handoff design system
+   (_ds/.../tokens/{fonts,colors,typography,spacing,effects}.css).
+   Keep these values in sync with the design system if it changes. */
+
+/* --- fonts: Dosis, used system-wide (display + body + accent) --- */
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200;300;400;500;600;700;800&display=swap');
+
+:root {
+  /* --- Base palette (from the brand's Adobe Color swatch) --- */
+  --olive-900: #3A3C33;
+  --olive-700: #65695B;
+  --sage-600: #9CA38E;
+  --sage-300: #C0C4B7;
+  --slate-700: #4C6170;
+  --slate-500: #8A9EAB;
+  --cream-100: #EBE0DD;
+  --tan-200: #D9C3B6;
+
+  --cream-50: #FBF6F1;
+  --tan-300: #C7A996;
+  --slate-800: #35434D;
+  --slate-900: #2C3841;
+  --slate-100: #DCE3E6;
+  --sage-100: #E4EBDD;
+  --olive-800: #4B4D42;
+  --olive-100: #E3E4DC;
+
+  --blush-100: #F3E4E1;
+  --blush-300: #E8C7BE;
+  --blush-500: #D9A79A;
+  --blush-700: #B97D6E;
+
+  --ink-900: #33322D;
+  --ink-700: #55534B;
+  --ink-500: #7C7A70;
+  --ink-300: #B5B0A5;
+  --white: #FFFFFF;
+
+  /* --- Semantic aliases --- */
+  --bg-page: var(--cream-50);
+  --bg-surface: var(--white);
+  --bg-surface-alt: var(--cream-100);
+  --bg-sunken: var(--sage-300);
+
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-700);
+  --text-muted: var(--ink-500);
+  --text-on-accent: var(--white);
+  --text-on-dark: var(--cream-50);
+
+  --border-subtle: #E4DAD1;
+  --border-strong: var(--sage-600);
+
+  --accent-primary: var(--slate-700);
+  --accent-primary-hover: var(--slate-900);
+  --accent-primary-tint: var(--slate-100);
+
+  --accent-secondary: var(--olive-700);
+  --accent-secondary-hover: var(--olive-800);
+
+  --success: var(--sage-600);
+  --success-tint: var(--sage-100);
+
+  --focus-ring: var(--slate-500);
+
+  /* --- Typography --- */
+  --font-display: 'Dosis', system-ui, sans-serif;
+  --font-body: 'Dosis', system-ui, sans-serif;
+  --font-accent: 'Dosis', system-ui, sans-serif;
+
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-md: 18px;
+  --text-lg: 22px;
+  --text-xl: 28px;
+  --text-2xl: 36px;
+  --text-3xl: 48px;
+  --text-4xl: 64px;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+  --weight-black: 800;
+
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+
+  /* --- Spacing & radii --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  --container-max: 1200px;
+
+  /* --- Effects --- */
+  --shadow-xs: 0 1px 2px rgba(51, 50, 45, 0.06);
+  --shadow-sm: 0 2px 8px rgba(51, 50, 45, 0.08);
+  --shadow-md: 0 8px 24px rgba(51, 50, 45, 0.10);
+  --shadow-lg: 0 16px 40px rgba(51, 50, 45, 0.14);
+
+  --shadow-card: 0 6px 20px rgba(101, 105, 91, 0.12);
+  --shadow-card-hover: 0 10px 28px rgba(101, 105, 91, 0.18);
+
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+}
+
+/* --- Dark mode ---
+   Mirrors the DARK_VARS overrides from the handoff design (Cooking Planner.dc.html).
+   Applied automatically from the OS setting; the reference design had no toggle. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-page: #161D22;
+    --bg-surface: #28333A;
+    --bg-surface-alt: #344049;
+    --bg-sunken: #0F1418;
+    --text-primary: #F7F2EC;
+    --text-secondary: #C7D0D4;
+    --text-muted: #8896A0;
+    --text-on-accent: #20161A;
+    --border-subtle: rgba(255, 255, 255, 0.16);
+    --border-strong: #9CB4C2;
+    --accent-primary: #D9A79A;
+    --accent-primary-hover: #E8C7BE;
+    --accent-primary-tint: rgba(217, 167, 154, 0.2);
+    --accent-secondary: #C0C4B7;
+    --accent-secondary-hover: #DCE0D4;
+    --success: #A9C08F;
+    --success-tint: rgba(169, 192, 143, 0.2);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg-page: #161D22;
+  --bg-surface: #28333A;
+  --bg-surface-alt: #344049;
+  --bg-sunken: #0F1418;
+  --text-primary: #F7F2EC;
+  --text-secondary: #C7D0D4;
+  --text-muted: #8896A0;
+  --text-on-accent: #20161A;
+  --border-subtle: rgba(255, 255, 255, 0.16);
+  --border-strong: #9CB4C2;
+  --accent-primary: #D9A79A;
+  --accent-primary-hover: #E8C7BE;
+  --accent-primary-tint: rgba(217, 167, 154, 0.2);
+  --accent-secondary: #C0C4B7;
+  --accent-secondary-hover: #DCE0D4;
+  --success: #A9C08F;
+  --success-tint: rgba(169, 192, 143, 0.2);
+}
+
+/* Responsive: shrink the largest display sizes on narrow screens */
+@media (max-width: 520px) {
+  :root {
+    --text-3xl: 34px;
+    --text-2xl: 30px;
+    --text-xl: 24px;
+  }
+}
